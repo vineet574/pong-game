@@ -1,0 +1,53 @@
+import pygame
+
+pygame.init()
+WIDTH, HEIGHT = 600, 400
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+
+ball = pygame.Rect(WIDTH//2, HEIGHT//2, 15, 15)
+ball_speed = [4, 4]
+
+paddle1 = pygame.Rect(10, HEIGHT//2 - 40, 10, 80)
+paddle2 = pygame.Rect(WIDTH - 20, HEIGHT//2 - 40, 10, 80)
+paddle_speed = 5
+
+running = True
+while running:
+    screen.fill((0, 0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] and paddle1.y > 0:
+        paddle1.y -= paddle_speed
+    if keys[pygame.K_s] and paddle1.y < HEIGHT - 80:
+        paddle1.y += paddle_speed
+    if keys[pygame.K_UP] and paddle2.y > 0:
+        paddle2.y -= paddle_speed
+    if keys[pygame.K_DOWN] and paddle2.y < HEIGHT - 80:
+        paddle2.y += paddle_speed
+
+    ball.x += ball_speed[0]
+    ball.y += ball_speed[1]
+
+    if ball.top <= 0 or ball.bottom >= HEIGHT:
+        ball_speed[1] = -ball_speed[1]
+
+    if ball.colliderect(paddle1) or ball.colliderect(paddle2):
+        ball_speed[0] = -ball_speed[0]
+
+    if ball.left <= 0 or ball.right >= WIDTH:
+        ball.x, ball.y = WIDTH//2, HEIGHT//2
+        ball_speed = [4, 4]
+
+    pygame.draw.rect(screen, (255, 255, 255), paddle1)
+    pygame.draw.rect(screen, (255, 255, 255), paddle2)
+    pygame.draw.ellipse(screen, (255, 255, 255), ball)
+    pygame.draw.aaline(screen, (255, 255, 255), (WIDTH//2, 0), (WIDTH//2, HEIGHT))
+
+    pygame.display.update()
+    clock.tick(60)
+
+pygame.quit()
