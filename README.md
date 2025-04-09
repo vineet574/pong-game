@@ -34,7 +34,14 @@ Requirements
 Python 3.x
 Pygame library
 
+Key Updates:
+Scoring System: Displays scores for both players on the screen.
 
+Ball Speed Increase: Ball's speed increases slightly after each paddle collision.
+
+Obstacle: Added a central obstacle that interacts with the ball.
+
+Sound Effects: Sounds for collisions and scoring events.
 
 
 
