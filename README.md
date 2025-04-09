@@ -1,47 +1,45 @@
- Pong Game
+# Pong Game
 
-A simple **Pong Game** built using Python and Pygame.
+A classic Pong game implemented in Python using the Pygame library. This version includes a scoring system, increasing ball speed, an obstacle, and sound effects for a more engaging experience.
 
- Getting Started
+## Features
 
- Prerequisites
-Make sure you have **Python** installed on your system. You can download it from [Python's official website](https://www.python.org/downloads/).
+- **Multiplayer Gameplay**: Two players can control their respective paddles.
+- **Scoring System**: Tracks and displays scores for both players.
+- **Dynamic Ball Speed**: Ball speed increases after paddle collisions.
+- **Central Obstacle**: A challenging obstacle in the middle of the screen.
+- **Sound Effects**: Audio for paddle collisions and scoring.
 
-Install Dependencies
-Open a terminal or command prompt and run:
+## How to Play
 
-pip install pygame
-Run the Game
-Clone this repository and navigate to the project directory:
-git clone https://github.com/vineet574/pong-game.git
+1. **Player 1 Controls**:
+   - `W`: Move paddle up
+   - `S`: Move paddle down
+2. **Player 2 Controls**:
+   - `Arrow Up`: Move paddle up
+   - `Arrow Down`: Move paddle down
+
+The goal is to score points by getting the ball past the opponent's paddle.
+
+## Prerequisites
+
+- Python 3.x installed on your system.
+- Pygame library installed. Run the following command to install it:
+  ```bash
+  pip install pygame
+
+
+
+How to Run
+Clone this repository:
+
+
+git clone <repository-url>
+Navigate to the project directory:
+
+
 cd pong-game
-Then, run the game using:
+Run the Python script:
+
+
 python pong_game.py
-Controls
-Player 1 (Left Paddle)	Player 2 (Right Paddle)
-W → Move Up	Up Arrow → Move Up
-S → Move Down	Down Arrow → Move Down
-
- Features
-Classic Pong-style gameplay.
-Two-player mode with simple keyboard controls.
-Ball bounces off walls and paddles.
-Game resets when a player scores.
-
-
-
-Requirements
-Python 3.x
-Pygame library
-
-Key Updates:
-Scoring System: Displays scores for both players on the screen.
-
-Ball Speed Increase: Ball's speed increases slightly after each paddle collision.
-
-Obstacle: Added a central obstacle that interacts with the ball.
-
-Sound Effects: Sounds for collisions and scoring events.
-
-
-
