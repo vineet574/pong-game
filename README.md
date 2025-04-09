@@ -43,3 +43,21 @@ Run the Python script:
 
 
 python pong_game.py
+
+
+Game Files
+pong_game.py: Main game script.
+
+collision.wav: Sound effect for paddle collisions.
+
+score.wav: Sound effect for scoring.
+
+README.md: Project documentation.
+
+Future Improvements
+Add AI to control one paddle for single-player mode.
+
+Enhance graphics with custom themes.
+
+Add power-ups or additional obstacles for more fun.
+
