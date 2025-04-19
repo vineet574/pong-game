@@ -61,3 +61,14 @@ Enhance graphics with custom themes.
 
 Add power-ups or additional obstacles for more fun.
 
+
+Power-Ups for increased paddle speed.
+
+Dynamic Obstacle Movement for added challenge.
+
+Timer for the game.
+
+Background Music for an immersive experience.
+
+High Scores tracking.
+
