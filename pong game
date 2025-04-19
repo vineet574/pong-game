@@ -1,30 +1,43 @@
 import pygame
+import random
 
 pygame.init()
+
 WIDTH, HEIGHT = 600, 400
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-ball = pygame.Rect(WIDTH//2, HEIGHT//2, 15, 15)
+ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, 15, 15)
 ball_speed = [4, 4]
 
-paddle1 = pygame.Rect(10, HEIGHT//2 - 40, 10, 80)
-paddle2 = pygame.Rect(WIDTH - 20, HEIGHT//2 - 40, 10, 80)
+paddle1 = pygame.Rect(10, HEIGHT // 2 - 40, 10, 80)
+paddle2 = pygame.Rect(WIDTH - 20, HEIGHT // 2 - 40, 10, 80)
 paddle_speed = 5
 
 player1_score = 0
 player2_score = 0
 font = pygame.font.Font(None, 74)
 
-obstacle = pygame.Rect(WIDTH//2 - 10, HEIGHT//2 - 50, 20, 100)
+obstacle = pygame.Rect(WIDTH // 2 - 10, HEIGHT // 2 - 50, 20, 100)
+obstacle_speed = 3
+
+power_up = pygame.Rect(WIDTH // 2 - 30, HEIGHT // 2 + 60, 20, 20)
+power_up_active = True
+
+pygame.mixer.music.load("background_music.mp3")
+pygame.mixer.music.play(-1)
 
 collision_sound = pygame.mixer.Sound("collision.wav")
 score_sound = pygame.mixer.Sound("score.wav")
 
+start_ticks = pygame.time.get_ticks()  # Timer
+game_duration = 60  # 60 seconds game time
+high_score = 0
+
 running = True
 while running:
     screen.fill((0, 0, 0))
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -52,27 +65,48 @@ while running:
 
     if ball.colliderect(obstacle):
         ball_speed[0] = -ball_speed[0]
-    
+
     if ball.left <= 0:
         player2_score += 1
         score_sound.play()
-        ball.x, ball.y = WIDTH//2, HEIGHT//2
+        ball.x, ball.y = WIDTH // 2, HEIGHT // 2
         ball_speed = [4, 4]
 
     if ball.right >= WIDTH:
         player1_score += 1
         score_sound.play()
-        ball.x, ball.y = WIDTH//2, HEIGHT//2
+        ball.x, ball.y = WIDTH // 2, HEIGHT // 2
         ball_speed = [4, 4]
+
+    if ball.colliderect(power_up) and power_up_active:
+        paddle_speed += 3
+        power_up_active = False
+
+    obstacle.y += obstacle_speed
+    if obstacle.top <= 0 or obstacle.bottom >= HEIGHT:
+        obstacle_speed = -obstacle_speed
 
     pygame.draw.rect(screen, (255, 255, 255), paddle1)
     pygame.draw.rect(screen, (255, 255, 255), paddle2)
     pygame.draw.ellipse(screen, (255, 255, 255), ball)
-    pygame.draw.aaline(screen, (255, 255, 255), (WIDTH//2, 0), (WIDTH//2, HEIGHT))
+    pygame.draw.aaline(screen, (255, 255, 255), (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))
     pygame.draw.rect(screen, (255, 0, 0), obstacle)
+    if power_up_active:
+        pygame.draw.rect(screen, (0, 255, 0), power_up)
 
     score_text = font.render(f"{player1_score} - {player2_score}", True, (255, 255, 255))
-    screen.blit(score_text, (WIDTH//2 - 50, 10))
+    screen.blit(score_text, (WIDTH // 2 - 50, 10))
+
+    elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000
+    time_left = game_duration - elapsed_time
+    timer_text = font.render(f"Time: {time_left}", True, (255, 255, 255))
+    screen.blit(timer_text, (10, 10))
+
+    if time_left <= 0:
+        high_score = max(player1_score, player2_score)
+        with open("high_score.txt", "w") as file:
+            file.write(str(high_score))
+        running = False
 
     pygame.display.update()
     clock.tick(60)
