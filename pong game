@@ -21,8 +21,11 @@ font = pygame.font.Font(None, 74)
 obstacle = pygame.Rect(WIDTH // 2 - 10, HEIGHT // 2 - 50, 20, 100)
 obstacle_speed = 3
 
-power_up = pygame.Rect(WIDTH // 2 - 30, HEIGHT // 2 + 60, 20, 20)
+power_up = pygame.Rect(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 20, 20)
 power_up_active = True
+
+speed_boost = pygame.Rect(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 20, 20)
+speed_boost_active = True
 
 pygame.mixer.music.load("background_music.mp3")
 pygame.mixer.music.play(-1)
@@ -30,9 +33,18 @@ pygame.mixer.music.play(-1)
 collision_sound = pygame.mixer.Sound("collision.wav")
 score_sound = pygame.mixer.Sound("score.wav")
 
-start_ticks = pygame.time.get_ticks()  # Timer
-game_duration = 60  # 60 seconds game time
+start_ticks = pygame.time.get_ticks()  
+game_duration = 60  
 high_score = 0
+
+paused = False  
+
+def ai_movement():
+    if ball.x > WIDTH // 2:
+        if paddle2.centery < ball.centery:
+            paddle2.y += paddle_speed
+        elif paddle2.centery > ball.centery:
+            paddle2.y -= paddle_speed
 
 running = True
 while running:
@@ -41,16 +53,23 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                paused = not paused  
+
+    if paused:
+        pause_text = font.render("PAUSED", True, (255, 255, 255))
+        screen.blit(pause_text, (WIDTH // 2 - 50, HEIGHT // 2))
+        pygame.display.update()
+        continue  
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w] and paddle1.y > 0:
         paddle1.y -= paddle_speed
     if keys[pygame.K_s] and paddle1.y < HEIGHT - 80:
         paddle1.y += paddle_speed
-    if keys[pygame.K_UP] and paddle2.y > 0:
-        paddle2.y -= paddle_speed
-    if keys[pygame.K_DOWN] and paddle2.y < HEIGHT - 80:
-        paddle2.y += paddle_speed
+    
+    ai_movement()  
 
     ball.x += ball_speed[0]
     ball.y += ball_speed[1]
@@ -80,7 +99,12 @@ while running:
 
     if ball.colliderect(power_up) and power_up_active:
         paddle_speed += 3
-        power_up_active = False
+        power_up_active = False  
+
+    if ball.colliderect(speed_boost) and speed_boost_active:
+        ball_speed[0] += 2
+        ball_speed[1] += 2
+        speed_boost_active = False  
 
     obstacle.y += obstacle_speed
     if obstacle.top <= 0 or obstacle.bottom >= HEIGHT:
@@ -91,8 +115,12 @@ while running:
     pygame.draw.ellipse(screen, (255, 255, 255), ball)
     pygame.draw.aaline(screen, (255, 255, 255), (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))
     pygame.draw.rect(screen, (255, 0, 0), obstacle)
+    
     if power_up_active:
         pygame.draw.rect(screen, (0, 255, 0), power_up)
+
+    if speed_boost_active:
+        pygame.draw.rect(screen, (0, 0, 255), speed_boost)
 
     score_text = font.render(f"{player1_score} - {player2_score}", True, (255, 255, 255))
     screen.blit(score_text, (WIDTH // 2 - 50, 10))
