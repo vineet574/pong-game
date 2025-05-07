@@ -71,4 +71,35 @@ Timer for the game.
 Background Music for an immersive experience.
 
 High Scores tracking.
+Enhanced Features:
+Speed Boost Power-Up
 
+Introduce another power-up that temporarily increases ball speed when collected.
+
+AI-Controlled Paddle (Single-Player Mode)
+
+Implement an AI-controlled opponent using simple logic like tracking ball movement.
+
+Dynamic Backgrounds
+
+Change background color every few seconds for a visually engaging experience.
+
+Combo Scoring
+
+Award bonus points for consecutive hits without missing.
+
+Game Over Screen
+
+Display a final score and a message when the timer hits zero.
+
+Pause & Resume Feature
+
+Allow players to pause and resume using the spacebar.
+
+Multiple Obstacles
+
+Randomly generate obstacles that move in different patterns.
+
+Ball Trail Effect
+
+Create a fading ball trail to enhance the visual aesthetics.
