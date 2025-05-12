@@ -103,3 +103,16 @@ Randomly generate obstacles that move in different patterns.
 Ball Trail Effect
 
 Create a fading ball trail to enhance the visual aesthetics.
+
+New Features Added:
+Player Lives
+
+Multiple Power-Ups (Shrink Paddle, Reverse Controls)
+
+Game Over Screen
+
+Dynamic Background Color Change on Collision
+
+High Score Persistence Across Sessions
+
+
