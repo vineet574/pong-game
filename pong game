@@ -27,17 +27,32 @@ power_up_active = True
 speed_boost = pygame.Rect(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 20, 20)
 speed_boost_active = True
 
+shrink_power_up = pygame.Rect(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 20, 20)
+shrink_power_up_active = True
+
+reverse_power_up = pygame.Rect(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 20, 20)
+reverse_power_up_active = True
+
+reverse_controls = False
+lives = 3
+background_color = (0, 0, 0)
+
 pygame.mixer.music.load("background_music.mp3")
 pygame.mixer.music.play(-1)
 
 collision_sound = pygame.mixer.Sound("collision.wav")
 score_sound = pygame.mixer.Sound("score.wav")
 
-start_ticks = pygame.time.get_ticks()  
-game_duration = 60  
-high_score = 0
+start_ticks = pygame.time.get_ticks()
+game_duration = 60
 
-paused = False  
+try:
+    with open("high_score.txt", "r") as file:
+        saved_high_score = int(file.read())
+except:
+    saved_high_score = 0
+
+paused = False
 
 def ai_movement():
     if ball.x > WIDTH // 2:
@@ -48,28 +63,34 @@ def ai_movement():
 
 running = True
 while running:
-    screen.fill((0, 0, 0))
+    screen.fill(background_color)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                paused = not paused  
+                paused = not paused
 
     if paused:
         pause_text = font.render("PAUSED", True, (255, 255, 255))
-        screen.blit(pause_text, (WIDTH // 2 - 50, HEIGHT // 2))
+        screen.blit(pause_text, (WIDTH // 2 - 80, HEIGHT // 2))
         pygame.display.update()
-        continue  
+        continue
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and paddle1.y > 0:
-        paddle1.y -= paddle_speed
-    if keys[pygame.K_s] and paddle1.y < HEIGHT - 80:
-        paddle1.y += paddle_speed
-    
-    ai_movement()  
+    if reverse_controls:
+        if keys[pygame.K_w] and paddle1.y < HEIGHT - 80:
+            paddle1.y += paddle_speed
+        if keys[pygame.K_s] and paddle1.y > 0:
+            paddle1.y -= paddle_speed
+    else:
+        if keys[pygame.K_w] and paddle1.y > 0:
+            paddle1.y -= paddle_speed
+        if keys[pygame.K_s] and paddle1.y < HEIGHT - 80:
+            paddle1.y += paddle_speed
+
+    ai_movement()
 
     ball.x += ball_speed[0]
     ball.y += ball_speed[1]
@@ -80,31 +101,40 @@ while running:
     if ball.colliderect(paddle1) or ball.colliderect(paddle2):
         ball_speed[0] = int(ball_speed[0] * 1.1)
         ball_speed[1] = int(ball_speed[1] * 1.1)
+        background_color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         collision_sound.play()
 
     if ball.colliderect(obstacle):
         ball_speed[0] = -ball_speed[0]
 
-    if ball.left <= 0:
-        player2_score += 1
+    if ball.left <= 0 or ball.right >= WIDTH:
+        if ball.left <= 0:
+            player2_score += 1
+        else:
+            player1_score += 1
         score_sound.play()
         ball.x, ball.y = WIDTH // 2, HEIGHT // 2
         ball_speed = [4, 4]
-
-    if ball.right >= WIDTH:
-        player1_score += 1
-        score_sound.play()
-        ball.x, ball.y = WIDTH // 2, HEIGHT // 2
-        ball_speed = [4, 4]
+        lives -= 1
+        if lives <= 0:
+            break
 
     if ball.colliderect(power_up) and power_up_active:
         paddle_speed += 3
-        power_up_active = False  
+        power_up_active = False
 
     if ball.colliderect(speed_boost) and speed_boost_active:
         ball_speed[0] += 2
         ball_speed[1] += 2
-        speed_boost_active = False  
+        speed_boost_active = False
+
+    if ball.colliderect(shrink_power_up) and shrink_power_up_active:
+        paddle2.height = max(20, paddle2.height - 20)
+        shrink_power_up_active = False
+
+    if ball.colliderect(reverse_power_up) and reverse_power_up_active:
+        reverse_controls = True
+        reverse_power_up_active = False
 
     obstacle.y += obstacle_speed
     if obstacle.top <= 0 or obstacle.bottom >= HEIGHT:
@@ -115,26 +145,40 @@ while running:
     pygame.draw.ellipse(screen, (255, 255, 255), ball)
     pygame.draw.aaline(screen, (255, 255, 255), (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))
     pygame.draw.rect(screen, (255, 0, 0), obstacle)
-    
+
     if power_up_active:
         pygame.draw.rect(screen, (0, 255, 0), power_up)
-
     if speed_boost_active:
         pygame.draw.rect(screen, (0, 0, 255), speed_boost)
+    if shrink_power_up_active:
+        pygame.draw.rect(screen, (255, 255, 0), shrink_power_up)
+    if reverse_power_up_active:
+        pygame.draw.rect(screen, (255, 0, 255), reverse_power_up)
 
     score_text = font.render(f"{player1_score} - {player2_score}", True, (255, 255, 255))
     screen.blit(score_text, (WIDTH // 2 - 50, 10))
+
+    lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (WIDTH - 200, 10))
 
     elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000
     time_left = game_duration - elapsed_time
     timer_text = font.render(f"Time: {time_left}", True, (255, 255, 255))
     screen.blit(timer_text, (10, 10))
 
-    if time_left <= 0:
-        high_score = max(player1_score, player2_score)
+    if time_left <= 0 or lives <= 0:
+        high_score = max(player1_score, player2_score, saved_high_score)
         with open("high_score.txt", "w") as file:
             file.write(str(high_score))
-        running = False
+
+        screen.fill((0, 0, 0))
+        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
+        screen.blit(game_over_text, (WIDTH // 2 - 150, HEIGHT // 2 - 50))
+        high_score_text = font.render(f"High Score: {high_score}", True, (255, 255, 255))
+        screen.blit(high_score_text, (WIDTH // 2 - 150, HEIGHT // 2 + 10))
+        pygame.display.update()
+        pygame.time.wait(3000)
+        break
 
     pygame.display.update()
     clock.tick(60)
